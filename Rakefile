@@ -43,7 +43,7 @@ task :create_admin_unit do
     input =~ URI.regexp
   end
   (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri])
-  classifications = loket_db.body_classifications_for_unit(klass[:uri])
+  classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
     triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri)
   end
