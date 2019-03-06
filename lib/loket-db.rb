@@ -139,18 +139,18 @@ class LoketDb
      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/a3922c6d-425b-474f-9a02-ffb71a436bfc': politiezone,
      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089': ocmw_vereniging
     }
-    map[unit_klass.to_sym]
+    map[unit_klass.to_sym].map{ |k, v| [RDF::URI.new(k), v] }.to_h
   end
 
   def write_ttl_to_file(name)
     output = Tempfile.new(name)
     export_path = ENV["EXPORT_PATH"] ||= './'
     begin
-      output.write "# started #{name} at #{DateTime.now}"
+      output.puts "# started #{name} at #{DateTime.now}"
       yield output
-      output.write "# finished #{name} at #{DateTime.now}"
+      output.puts "# finished #{name} at #{DateTime.now}"
       output.close
-      path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%dT%H%M%S")}-#{name}.ttl")
+      path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-#{name}.ttl")
       FileUtils.copy(output, path)
       puts "output written to #{path}"
       output.unlink
