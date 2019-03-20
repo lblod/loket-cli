@@ -31,7 +31,7 @@ class LoketDb
     [gebied, triples]
   end
 
-  def create_administrative_unit(name, code, area, classification)
+  def create_administrative_unit(name, code, area, classification, provincie)
     triples = RDF::Repository.new
     uuid = SecureRandom.uuid
     iri = RDF::URI.new("http://data.lblod.info/id/bestuurseenheden/#{uuid}")
@@ -39,6 +39,7 @@ class LoketDb
     triples << [iri, MU.uuid, uuid]
     triples << [iri, SKOS.prefLabel, name ]
     triples << [iri, BESLUIT.classificatie, classification]
+    triples << [iri, EXT.inProvincie, provincie]
     triples << [iri, BESLUIT.werkingsgebied, area]
     triples << [iri, EXT.kbonummer, code]
     triples << [iri, DC.identifier, code]
@@ -65,7 +66,7 @@ class LoketDb
 
   def unit_classifications
     [
-      { id: 6, name: "Intercommunale /  intergemeentelijk samenwerkingsverband", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000004')},
+      { id: 6, name: "Intercommunale / intergemeentelijk samenwerkingsverband", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000004')},
       { id: 1, name: "Autonoom gemeentebedrijf", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/36a82ba0-7ff1-4697-a9dd-2e94df73b721')},
       { id: 2, name: "Autonoom provinciebedrijf", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/80310756-ce0a-4a1b-9b8e-7c01b6cc7a2d')},
       { id: 3, name: "Hulpverleningszone", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/ea446861-2c51-45fa-afd3-4e4a37b71562')},
@@ -76,6 +77,16 @@ class LoketDb
       { id: 9, name: "OCMW", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000002')},
       { id: 10, name: "District", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000003')}
 
+    ]
+  end
+
+  def unit_provincies
+    [
+      { id: 1, name: "Antwerpen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/f2bda6eb42c1ab85c4ef36588a043ac2bfeffa31bfb88bb7abc597f01efe270b')},
+      { id: 2, name: "Limburg", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/b6868be9ca6881b1020e6cff8d431531a1cff64b39dc92646a5173b3ee144516')},
+      { id: 3, name: "Oost-Vlaanderen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c')},
+      { id: 4, name: "Vlaams-Brabant", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c')},
+      { id: 5, name: "West-Vlaanderen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c') }
     ]
   end
 

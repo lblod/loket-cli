@@ -33,6 +33,11 @@ task :create_admin_unit do
     eenheid_classificaties.find{ |kl| kl[:id] == input.to_i }
   end
   klass = eenheid_classificaties.find{ |kl| kl[:id] == klass_input.to_i }
+  eenheid_provincies = loket_db.unit_provincies.sort_by{ |kl| kl[:id] }
+  klass_input = until_valid("Select provincie of the administrative unit", eenheid_provincies) do |input|
+    eenheid_classificaties.find{ |kl| kl[:id] == input.to_i }
+  end
+  klass_provincie = eenheid_provincies.find{ |kl| kl[:id] == klass_input.to_i }
   kbonumber = until_valid("KBO number") do |input|
     input.length == 10
   end
@@ -42,7 +47,7 @@ task :create_admin_unit do
   werkingsgebied = until_valid("Werkingsgebied (URI)") do |input|
     input =~ URI.regexp
   end
-  (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri])
+  (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri])
   classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
     triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri)
