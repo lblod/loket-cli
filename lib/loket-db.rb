@@ -65,7 +65,7 @@ class LoketDb
 
   def unit_classifications
     [
-      { id: 6, name: "Intercommunale", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000004')},
+      { id: 6, name: "Intercommunale /  intergemeentelijk samenwerkingsverband", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000004')},
       { id: 1, name: "Autonoom gemeentebedrijf", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/36a82ba0-7ff1-4697-a9dd-2e94df73b721')},
       { id: 2, name: "Autonoom provinciebedrijf", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/80310756-ce0a-4a1b-9b8e-7c01b6cc7a2d')},
       { id: 3, name: "Hulpverleningszone", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/ea446861-2c51-45fa-afd3-4e4a37b71562')},
