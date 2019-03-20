@@ -56,4 +56,3 @@ task :create_admin_unit do
     file.write triples.dump(:ntriples)
   end
 end
-
