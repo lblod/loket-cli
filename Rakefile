@@ -35,7 +35,7 @@ task :create_admin_unit do
   klass = eenheid_classificaties.find{ |kl| kl[:id] == klass_input.to_i }
   eenheid_provincies = loket_db.unit_provincies.sort_by{ |kl| kl[:id] }
   klass_input = until_valid("Select provincie of the administrative unit", eenheid_provincies) do |input|
-    eenheid_classificaties.find{ |kl| kl[:id] == input.to_i }
+    eenheid_provincies.find{ |kl| kl[:id] == input.to_i }
   end
   klass_provincie = eenheid_provincies.find{ |kl| kl[:id] == klass_input.to_i }
   kbonumber = until_valid("KBO number") do |input|

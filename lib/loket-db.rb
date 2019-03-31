@@ -85,8 +85,8 @@ class LoketDb
       { id: 1, name: "Antwerpen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/f2bda6eb42c1ab85c4ef36588a043ac2bfeffa31bfb88bb7abc597f01efe270b')},
       { id: 2, name: "Limburg", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/b6868be9ca6881b1020e6cff8d431531a1cff64b39dc92646a5173b3ee144516')},
       { id: 3, name: "Oost-Vlaanderen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c')},
-      { id: 4, name: "Vlaams-Brabant", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c')},
-      { id: 5, name: "West-Vlaanderen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/a9a0cabd376a2b3a8eb838f15f6aeb1b63ffe49d527598994962e0d15ad2081c') }
+      { id: 4, name: "Vlaams-Brabant", uri: RDF::URI.new('http://data.lblod.info/werkingsgebieden/60a52229c92c1407e0549a573f820fb8a1f9fab5c82654b4b3493bc81be365de')},
+      { id: 5, name: "West-Vlaanderen", uri: RDF::URI.new('http://data.lblod.info/id/werkingsgebieden/9c503a712d448bc8b89c1f8802c207e30bd192bc8da3bf22509a547949a45301') }
     ]
   end
 
