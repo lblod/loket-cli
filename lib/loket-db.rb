@@ -123,20 +123,20 @@ class LoketDb
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/013cc838-173a-4657-b1ae-b00c048df943':    "Raad van bestuur",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/0dbc70ec-6be9-4997-b8e1-11b6c0542382':    "Bevoegd beslissingsorgaan",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b52094ff-21a2-4da8-8dbe-f513365d1528':    "Algemene vergadering",
-      "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b3e9ac5f-43d6-4f86-b746-78ee7dd64113":    "Leidend Ambtenaar"
+      "<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4>":  "Leidend Ambtenaar"
     }
     apb = {
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/013cc838-173a-4657-b1ae-b00c048df943':    "Raad van bestuur",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/0dbc70ec-6be9-4997-b8e1-11b6c0542382':    "Bevoegd beslissingsorgaan",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b52094ff-21a2-4da8-8dbe-f513365d1528':    "Algemene vergadering",
-      "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b3e9ac5f-43d6-4f86-b746-78ee7dd64113":    "Leidend Ambtenaar"
+      "<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4>":  "Leidend Ambtenaar"
     }
     intergemeentelijk_samenwerkingsverband = {
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5733254e-73ff-4844-8d43-7afb7ec726e8':    "Directiecomité",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/013cc838-173a-4657-b1ae-b00c048df943':    "Raad van bestuur",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/17e76b36-64a1-4db1-8927-def3064b4bf1':    "Regionaal bestuurscomité",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b52094ff-21a2-4da8-8dbe-f513365d1528':    "Algemene vergadering",
-      "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b3e9ac5f-43d6-4f86-b746-78ee7dd64113":    "Leidend Ambtenaar"
+      "<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4>":  "Leidend Ambtenaar"
     }
     hulpverleningszone = {
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/a9e30e31-0cd2-4f4a-9352-545c5d43be83': "Zoneraad"
@@ -147,7 +147,7 @@ class LoketDb
     ocmw_vereniging = {
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/013cc838-173a-4657-b1ae-b00c048df943':  "Raad van bestuur",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b52094ff-21a2-4da8-8dbe-f513365d1528':  "Algemene vergadering",
-      "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b3e9ac5f-43d6-4f86-b746-78ee7dd64113":  "Leidend Ambtenaar"
+      "<http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4>": "Leidend Ambtenaar"
     }
     map = {
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000000': provincie,
