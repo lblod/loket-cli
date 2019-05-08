@@ -44,10 +44,19 @@ task :create_admin_unit do
   name = until_valid("Name") do |input|
     input.length > 0
   end
+  number_afkortings = until_valid("How many afkortings ?") do |input|
+    input.length > 0
+  end
+  afkortings = []
+  for x in 0..number_afkortings.to_i-1
+    afkortings << until_valid("Afkorting #{x+1} ?") do |input|
+      input.length > 0
+    end
+  end
   werkingsgebied = until_valid("Werkingsgebied (URI)") do |input|
     input =~ URI.regexp
   end
-  (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri])
+  (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri], afkortings)
   classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
     triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri)
