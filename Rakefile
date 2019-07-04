@@ -65,3 +65,15 @@ task :create_admin_unit do
     file.write triples.dump(:ntriples)
   end
 end
+
+task :create_mock_user do
+  puts "generating mock user"
+  loket_db = LoketDb.new
+  bestuurseenheid_uuid = until_valid("Bestuurseenheid uuid") do |input|
+    input.length > 0
+  end
+  filename = until_valid("Filename (without the extension)") do |input|
+    input.length > 0
+  end
+  loket_db.write_mock_user_to_file(bestuurseenheid_uuid, filename)
+end
