@@ -226,7 +226,7 @@ class LoketDb
            ?account a foaf:OnlineAccount;
                  mu:uuid ?uuidAccount;
                  foaf:accountServiceHomepage <https://github.com/lblod/mock-login-service>;
-                 ext:sessionRole \"LoketLB-toezichtGebruiker\", \"LoketLB-bbcdrGebruiker\", \"LoketLB-mandaatGebruiker\", \"LoketLB-berichtenGebruiker\", \"LoketLB-leidinggevendenGebruiker\", \"LoketLB-personeelsbeheerGebruiker\".
+                 ext:sessionRole \"LoketLB-toezichtGebruiker\", \"LoketLB-bbcdrGebruiker\", \"LoketLB-mandaatGebruiker\", \"LoketLB-berichtenGebruiker\", \"LoketLB-leidinggevendenGebruiker\", \"LoketLB-personeelsbeheer\", \"LoketLB-subsidies\".
         }
       } WHERE {
            <http://data.lblod.info/id/bestuurseenheden/#{bestuurseenheid_uuid}> a besluit:Bestuurseenheid;
