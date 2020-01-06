@@ -3,6 +3,9 @@ require 'optparse'
 require 'linkeddata'
 require 'uri'
 require_relative 'lib/loket-db'
+require_relative 'lib/personeelsdatabank'
+
+task :default => :create_admin_unit
 
 def until_valid(question, options = nil, &block)
   if options
@@ -25,6 +28,7 @@ def until_valid(question, options = nil, &block)
   end
 end
 
+desc "Create a new administrative unit"
 task :create_admin_unit do
   puts "generating a new administrative unit"
   loket_db = LoketDb.new
@@ -76,4 +80,13 @@ task :create_mock_user do
     input.length > 0
   end
   loket_db.write_mock_user_to_file(bestuurseenheid_uuid, filename)
+end
+
+# CSV structure: bestuurseenheid URI, classificatie label, pref label, uuid
+desc "Create personeelsaantallen for administrative unit"
+task :create_personeelsaantallen_for_csv do
+  puts "generating personeelsaantallen for besturseenheden from CSV"
+  personeelsdb = Personeelsdatabank.new
+  personeelsdb.create_personeelsaantallen_for_csv("/data/bestuurseenheden.csv")
+
 end
