@@ -7,11 +7,17 @@ class Personeelsdatabank
   RDFS = RDF::Vocab::RDFS
   EMPL = RDF::Vocabulary.new("http://lblod.data.gift/vocabularies/employee/")
   SDMXDIM = RDF::Vocabulary.new("http://purl.org/linked-data/sdmx/2009/dimension#")
+  SDMXATTR = RDF::Vocabulary.new("http://purl.org/linked-data/sdmx/2009/attribute#")
   QB = RDF::Vocabulary.new("http://purl.org/linked-data/cube#")
   DCT = RDF::Vocabulary.new("http://purl.org/dc/terms/")
 
-  TIME_PERIOD_LABEL = "2019"  # update if time_peridod changes
-  TIME_PERIOD = RDF::URI.new("http://data.lblod.info/employee-time-periods/88260830-7a2f-45b4-a262-b1e46ed303d1")
+  TIME_PERIOD_LABEL = "2020"  # update if time_peridod changes
+  TIME_PERIOD = RDF::URI.new("http://data.lblod.info/employee-time-periods/77e8efb4-a800-4791-81e3-4a618c49e57e")
+
+  UNIT_MEASURES = [
+    { label: 'Werknemers - Koppen', uri: RDF::URI.new("http://lblod.data.gift/concepts/feed220b-f398-456e-8635-94a04dfbdbe8") },
+    { label: 'Voltijds equivalenten - VTE', uri: RDF::URI.new("http://lblod.data.gift/concepts/a97325c1-f572-4dd8-8952-c2cb254f114a") }
+  ]
 
   EDUCATIONAL_LEVELS = [
     RDF::URI.new("http://lblod.data.gift/concepts/53abea92-8a33-4d6c-8813-6e3a0d8c70e5"),
@@ -45,7 +51,9 @@ class Personeelsdatabank
       name = row[2]
       classification = row[1]
       begin
-        create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification)
+        UNIT_MEASURES.each do |unit_measure|
+          create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification, unit_measure)
+        end
       rescue StandardError => e
         puts e
         puts "Failed to create personeelsaantallen for #{classification} #{name}. Skipping this one."
@@ -53,10 +61,12 @@ class Personeelsdatabank
     end
   end
 
-  def create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classificationLabel)
+  def create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification_label, unit_measure)
     graph = "http://mu.semte.ch/graphs/organizations/#{uuid}/LoketLB-personeelsbeheer"
-    dataset_label = "Personeelsaantallen #{classificationLabel} #{name}"
-    slice_label = "#{dataset_label} #{TIME_PERIOD_LABEL}"
+    dataset_title = unit_measure[:label]
+    dataset_description = "Personeelsaantallen van #{classification_label} #{name} in (#{unit_measure[:label]})"
+    slice_label = "#{dataset_title} #{TIME_PERIOD_LABEL}"
+    file_name = "#{dataset_description} #{TIME_PERIOD_LABEL}"
 
     triples = RDF::Repository.new
 
@@ -65,8 +75,10 @@ class Personeelsdatabank
 
     triples << [dataset, RDF.type, EMPL.EmployeeDataset]
     triples << [dataset, MU.uuid, dataset_uuid]
-    triples << [dataset, RDFS.label, dataset_label]
+    triples << [dataset, DCT.title, dataset_title]
+    triples << [dataset, DCT.description, dataset_description]
     triples << [dataset, DCT.creator, bestuurseenheid]
+    triples << [dataset, DCT.subject, unit_measure[:uri]]
 
     period_slice_uuid = SecureRandom.uuid
     period_slice = RDF::URI.new("http://data.lblod.info/employee-period-slices/#{period_slice_uuid}")
@@ -86,6 +98,7 @@ class Personeelsdatabank
 
             triples << [observation, RDF.type, EMPL.EmployeeObservation]
             triples << [observation, MU.uuid, observation_uuid]
+            triples << [observation, SDMXATTR.unitMeasure, unit_measure[:uri]]
             triples << [observation, SDMXDIM.sex, gender]
             triples << [observation, EMPL.workingTimeCategory, working_time_category]
             triples << [observation, EMPL.legalStatus, legal_status]
@@ -95,8 +108,7 @@ class Personeelsdatabank
         end
       end
     end
-
-    write_to_files(slice_label, graph, triples)
+    write_to_files(file_name, graph, triples)
   end
 
   def write_to_files(name, graph, triples)
