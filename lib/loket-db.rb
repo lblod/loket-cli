@@ -18,6 +18,7 @@ class LoketDb
   BESLUIT = RDF::Vocabulary.new("http://data.vlaanderen.be/ns/besluit#")
   EXT = RDF::Vocabulary.new("http://mu.semte.ch/vocabularies/ext/")
   ADMS = RDF::Vocabulary.new('http://www.w3.org/ns/adms#')
+  LBLODLG = RDF::Vocabulary.new('http://data.lblod.info/vocabularies/leidinggevenden/')
   BASE_IRI='http://data.lblod.info/id'
 
   def create_gebied(naam)
@@ -47,7 +48,7 @@ class LoketDb
     return [iri, triples]
   end
 
-  def create_administrative_body(unit, name, classification, start_date = Date.parse("2019-01-01"))
+  def create_administrative_body(unit, name, classification, start_date = Date.parse("2019-01-01"), bestuursfunctierol)
     triples = RDF::Repository.new
     orgaan_uuid = SecureRandom.uuid
     orgaan = RDF::URI.new("http://data.lblod.info/id/bestuursorganen/#{orgaan_uuid}")
@@ -62,6 +63,17 @@ class LoketDb
     triples << [tijdsorgaan, MU.uuid, tijdsorgaan_uuid]
     triples << [tijdsorgaan, MANDAAT.isTijdspecialisatieVan, orgaan]
     triples << [tijdsorgaan, MANDAAT.bindingStart, start_date]
+
+    if bestuursfunctierol
+      bestuursfunctie_uuid = SecureRandom.uuid
+      bestuursfunctie = RDF::URI.new("http://data.lblod.info/id/bestuursfuncties/#{bestuursfunctie_uuid}")
+      triples << [tijdsorgaan, LBLODLG.heeftBestuursfunctie, bestuursfunctie]
+      triples << [bestuursfunctie, RDF.type, LBLODLG.Bestuursfunctie]
+      triples << [bestuursfunctie, MU.uuid, bestuursfunctie_uuid]
+      triples << [bestuursfunctie, SKOS.prefLabel, bestuursfunctierol[1]]
+      triples << [bestuursfunctie, ORG.role, bestuursfunctierol[0]]
+    end
+
     triples
   end
 
@@ -181,6 +193,27 @@ class LoketDb
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089': ocmw_vereniging
     }
     map[unit_klass.to_sym].map{ |k, v| [RDF::URI.new(k), v] }.to_h
+  end
+
+  def get_bestuursfunctie_for_classification(classificatie_uri)
+    case classificatie_uri
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/39854196-f214-4688-87a1-d6ad12baa2fa" # algemeen directeur
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/39e08271-68db-4282-897f-5cba88c71862", "Algemeen directeur"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/11f0af9e-016c-4e0b-983a-d8bc73804abc" # adjunct algemeen directeur
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/f7b4e17b-6f4e-48e7-a558-bce61669f59a", "Adjunct algemeen directeur"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/62644b9c-4514-41dd-a660-4c35257f2b35" # financieel directeur
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/6d4cf4dd-2080-4752-8733-d02a036b2df0", "Financieel directeur"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/ed40469e-3b6f-4f38-99ba-18912ee352b0" # adjunct financieel directeur
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/3200ffc1-bb72-4235-a81c-64aa578b0789", "Adjunct financieel directeur"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/5ab19107-82d2-4273-a986-3da86fda050d" # griffier
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/63195ec6-02cb-4f86-ac8e-29c5183a11dc", "Griffier"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/3e9f22c1-0d35-445b-8a37-494addedf2d8" # financieel beheerder
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/b213c870-c762-4e39-9f78-3abdeda4b64a", "Financieel beheerder"]
+    when "http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4" # leidend ambtenaar
+      ["http://data.vlaanderen.be/id/concept/BestuursfunctieCode/855489b9-b584-4f34-90b2-39aea808cd9f", "Leidend ambtenaar"]
+    else
+      nil
+    end
   end
 
   def write_ttl_to_file(name)

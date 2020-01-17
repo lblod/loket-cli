@@ -63,7 +63,8 @@ task :create_admin_unit do
   (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri], afkortings)
   classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
-    triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri)
+    bestuursfunctierol = loket_db.get_bestuursfunctie_for_classification(klass_uri)
+    triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri, bestuursfunctierol)
   end
   loket_db.write_ttl_to_file(name.gsub(/\s/,'-')) do |file|
     file.write triples.dump(:ntriples)
