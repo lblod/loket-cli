@@ -45,7 +45,7 @@ class LoketDb
     triples << [iri, EXT.kbonummer, code]
     triples << [iri, DC.identifier, code]
     afkortings.each { |afkorting| triples << [iri, SKOS.altLabel, afkorting] }
-    return [iri, triples]
+    return [uuid, iri, triples]
   end
 
   def create_administrative_body(unit, name, classification, start_date = Date.parse("2019-01-01"), bestuursfunctierol)
@@ -216,30 +216,63 @@ class LoketDb
     end
   end
 
-  def write_ttl_to_file(name)
-    output = Tempfile.new(name)
-    export_path = ENV["EXPORT_PATH"] ||= './'
+
+  def write_units_to_file(bestuurseenheid)
     begin
-      output.puts "# started #{name} at #{DateTime.now}"
+      # Create units and functies
+      (unit_uuid, unit_uri, triples) = create_administrative_unit(bestuurseenheid[:name], bestuurseenheid[:kbo], bestuurseenheid[:werkingsgebied_uri], bestuurseenheid[:classification][:uri], bestuurseenheid[:provincie][:uri], bestuurseenheid[:afkortings])
+      unit_classifications = body_classifications_for_unit(bestuurseenheid[:classification][:uri].value.to_s)
+      unit_classifications.each do |unit_classification_uri, unit_classification_name|
+        bestuursfunctierol = get_bestuursfunctie_for_classification(unit_classification_uri)
+        triples << create_administrative_body(unit_uri, "#{unit_classification_name} #{bestuurseenheid[:name]}", unit_classification_uri, bestuursfunctierol)
+      end
+
+      # Prepare paths to write files
+      export_path = ENV["EXPORT_PATH"] ||= './'
+      now = DateTime.now
+      now_plus_one_second = now + Rational(1, 86400) #  Will add 1 second to now (since there are 86400 seconds in a day).
+      ttl_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.ttl")
+      graph_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.graph")
+      sparql_path = File.join(export_path, "#{now_plus_one_second.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}-mock-user.sparql")
+
+      # Write units and functies to file
+      write_ttl_to_file(ttl_path, graph_path) do |file|
+        file.write triples.dump(:ntriples)
+      end
+
+      # Write mock users to files
+      write_mock_user_to_file(unit_uuid, sparql_path)
+      [unit_uri, unit_uuid]
+    end
+  end
+
+  def write_ttl_to_file(ttl_path, graph_path)
+    begin
+      output = Tempfile.new(ttl_path)
+      output.puts "# started #{ttl_path} at #{DateTime.now}"
       yield output
-      output.puts "# finished #{name} at #{DateTime.now}"
+      output.puts "# finished #{ttl_path} at #{DateTime.now}"
       output.close
-      path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-#{name}.ttl")
-      FileUtils.copy(output, path)
-      puts "output written to #{path}"
+      FileUtils.copy(output, ttl_path)
+      puts "output written to #{ttl_path}"
+      output.unlink
+
+      output = Tempfile.new(graph_path)
+      output.puts "http://mu.semte.ch/graphs/public"
+      output.close
+      FileUtils.copy(output, graph_path)
+      puts "graph written to #{graph_path}"
       output.unlink
     rescue StandardError => e
       puts e
-      puts "failed to successfully write #{name}"
+      puts "failed to successfully write #{ttl_path} or #{graph_path}"
       output.close
       output.unlink
     end
   end
 
-  def write_mock_user_to_file(bestuurseenheid_uuid, name)
-    export_path = ENV["EXPORT_PATH"] ||= './'
+  def write_mock_user_to_file(bestuurseenheid_uuid, path)
     begin
-      path = File.join(export_path,"#{name}.sparql")
       content = "PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
       PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
       PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
