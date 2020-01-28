@@ -28,7 +28,7 @@ def until_valid(question, options = nil, &block)
   end
 end
 
-desc "Create a new administrative unit"
+desc "Create a new administrative unit from console"
 task :create_admin_unit do
   puts "generating a new administrative unit"
   loket_db = LoketDb.new
@@ -88,6 +88,58 @@ desc "Create personeelsaantallen for administrative unit"
 task :create_personeelsaantallen_for_csv do
   puts "generating personeelsaantallen for besturseenheden from CSV"
   personeelsdb = Personeelsdatabank.new
-  personeelsdb.create_personeelsaantallen_for_csv("/data/bestuurseenheden.csv")
+  personeelsdb.create_personeelsaantallen_for_csv("/data/personeelsaantallen.csv")
+
+end
+
+# CSV structure: KBO number | Name | Afkortings | Classification | Provincie | Werkingsgebied
+desc "Create administrative units as well as its organen, bestuursfuncties, mock users and personeelsaantallen"
+task :create_full_units_from_csv do
+  puts "generating administrative units, organen, bestuursfuncties, mock users and personeelsaantallen from CSV"
+  loket_db = LoketDb.new
+
+  csv_path = "/data/bestuurseenheden.csv"
+  rows = CSV.read(csv_path, encoding: 'utf-8')
+  puts "Retrieved #{rows.length} rows from CSV"
+  rows.each do |row|
+    # Initialize URI database
+    classifications = loket_db.unit_classifications.sort_by{ |kl| kl[:name] }
+    provincies = loket_db.unit_provincies.sort_by{ |kl| kl[:name] }
+
+    # Parse CSV
+    kbo = row[0]
+    name = row[1]
+    if (row[2] != nil)
+      afkortings = row[2].split(";")
+    else
+      afkortings = []
+    end
+    classification = classifications.find{ |kl| kl[:name] == row[3] }
+    provincie = provincies.find{ |kl| kl[:name] == row[4] }
+    werkingsgebied_uri = RDF::URI.new(row[5])
+
+    (unit, triples) = loket_db.create_administrative_unit(name, kbo, werkingsgebied_uri, classification[:uri], provincie[:uri], afkortings)
+    unit_classifications = loket_db.body_classifications_for_unit(classification[:uri].value.to_s)
+    unit_classifications.each do |unit_classification_uri, unit_classification_name|
+      bestuursfunctierol = loket_db.get_bestuursfunctie_for_classification(unit_classification_uri)
+      triples << loket_db.create_administrative_body(unit, "#{unit_classification_name} #{name}", unit_classification_uri, bestuursfunctierol)
+    end
+    loket_db.write_ttl_to_file(name.gsub(/\s/,'-')) do |file|
+      file.write triples.dump(:ntriples)
+    end
+
+    begin
+      # UNIT_MEASURES.each do |unit_measure|
+      #   create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification, unit_measure)
+      # end
+    rescue StandardError => e
+      puts e
+      puts "Failed to create unit for #{classification} #{name}. Skipping this one."
+    end
+  end
+
+
+  #personeelsdb = Personeelsdatabank.new
+  #personeelsdb.create_full_units_from_csv("/data/bestuurseenheden.csv")
 
 end

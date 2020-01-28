@@ -24,3 +24,42 @@ docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_ad
 docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_mock_user
 docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_personeelsaantallen_for_csv
 ```
+
+## Everything from csv :
+
+The following columns are requested for the input csv :
+- Classification
+- Provincie
+- KBO number
+- Name
+- Afkortings
+- Werkingsgebied
+
+### Precisions
+
+- KBO needs to be only numbers (no "." between numbers)
+- Afkortings need to be separated by ";" if there are several of them
+- You should provide a URI as werkingsgebied
+
+### Possible values
+
+Classification should be in the following list :
+- Autonoom gemeentebedrijf
+- Autonoom provinciebedrijf
+- Hulpverleningszone
+- Politiezone
+- OCMW vereniging
+- Dienstverlenende vereniging
+- Opdrachthoudende vereniging
+- Projectvereniging
+- Provincie
+- Gemeente
+- OCMW
+- District
+
+Provincie should be in the following list :
+- Antwerpen
+- Limburg
+- Oost-Vlaanderen
+- Vlaams-Brabant
+- West-Vlaanderen
