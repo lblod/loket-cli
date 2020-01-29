@@ -63,7 +63,7 @@ class Personeelsdatabank
     UNIT_MEASURES.each do |unit_measure|
       graph = "http://mu.semte.ch/graphs/organizations/#{uuid}/LoketLB-personeelsbeheer"
       dataset_title = unit_measure[:label]
-      dataset_description = "#{name} personeelsaantallen in (#{unit_measure[:label]})"
+      dataset_description = "#{classification_label} #{name} personeelsaantallen in (#{unit_measure[:label]})"
 
       slice_label = "#{dataset_title} #{TIME_PERIOD_LABEL}"
       file_name = "#{dataset_description} #{TIME_PERIOD_LABEL}"

@@ -231,9 +231,9 @@ class LoketDb
       export_path = ENV["EXPORT_PATH"] ||= './'
       now = DateTime.now
       now_plus_one_second = now + Rational(1, 86400) #  Will add 1 second to now (since there are 86400 seconds in a day).
-      ttl_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.ttl")
-      graph_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.graph")
-      sparql_path = File.join(export_path, "#{now_plus_one_second.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:name].gsub(/\s/,'-')}-mock-user.sparql")
+      ttl_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:classification][:name]}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.ttl")
+      graph_path = File.join(export_path, "#{now.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:classification][:name]}-#{bestuurseenheid[:name].gsub(/\s/,'-')}.graph")
+      sparql_path = File.join(export_path, "#{now_plus_one_second.strftime("%Y%m%d%H%M%S")}-#{bestuurseenheid[:classification][:name]}-#{bestuurseenheid[:name].gsub(/\s/,'-')}-mock-user.sparql")
 
       # Write units and functies to file
       write_ttl_to_file(ttl_path, graph_path) do |file|
