@@ -60,16 +60,17 @@ task :create_admin_unit do
   werkingsgebied = until_valid("Werkingsgebied (URI)") do |input|
     input =~ URI.regexp
   end
-  (unit, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri], afkortings)
+  (unit_uuid, unit_uri, triples) = loket_db.create_administrative_unit(name, kbonumber, RDF::URI.new(werkingsgebied), klass[:uri], klass_provincie[:uri], afkortings)
   classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
     bestuursfunctierol = loket_db.get_bestuursfunctie_for_classification(klass_uri)
-    triples << loket_db.create_administrative_body(unit, "#{klass_name} #{name}", klass_uri, bestuursfunctierol)
+    triples << loket_db.create_administrative_body(unit_uri, "#{klass_name} #{name}", klass_uri, bestuursfunctierol)
   end
 
   export_path = ENV["EXPORT_PATH"] ||= './'
-  path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-#{name.gsub(/\s/,'-')}.ttl")
-  loket_db.write_ttl_to_file(path) do |file|
+  ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-#{name.gsub(/\s/,'-')}.ttl")
+  graph_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-#{name.gsub(/\s/,'-')}.graph")
+  loket_db.write_ttl_to_file(ttl_path, graph_path) do |file|
     file.write triples.dump(:ntriples)
   end
 end
