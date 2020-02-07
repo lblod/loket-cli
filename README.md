@@ -20,11 +20,11 @@ docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_fu
 ```
 
 The following columns are requested for the input csv (in the same order) :
-- Classification
-- Provincie
 - KBO number
 - Name
 - Afkortings
+- Classification
+- Provincie
 - Werkingsgebied
 
 #### Precisions
