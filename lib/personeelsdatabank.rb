@@ -60,15 +60,13 @@ class Personeelsdatabank
   end
 
   def create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification_label)
+    triples = RDF::Repository.new
     UNIT_MEASURES.each do |unit_measure|
       graph = "http://mu.semte.ch/graphs/organizations/#{uuid}/LoketLB-personeelsbeheer"
       dataset_title = unit_measure[:label]
       dataset_description = "#{classification_label} #{name} personeelsaantallen in (#{unit_measure[:label]})"
 
       slice_label = "#{dataset_title} #{TIME_PERIOD_LABEL}"
-      file_name = "#{dataset_description} #{TIME_PERIOD_LABEL}"
-
-      triples = RDF::Repository.new
 
       dataset_uuid = SecureRandom.uuid
       dataset = RDF::URI.new("http://data.lblod.info/employee-datasets/#{dataset_uuid}")
@@ -108,8 +106,9 @@ class Personeelsdatabank
           end
         end
       end
-      write_to_files(file_name, graph, triples)
     end
+    file_name = "#{classification_label} #{name} personeelsaantallen"
+    write_to_files(file_name, graph, triples)
   end
 
   def write_to_files(name, graph, triples)
@@ -122,7 +121,7 @@ class Personeelsdatabank
       output.write triples.dump(:ntriples)
       output.puts "# finished #{name} at #{DateTime.now + Rational(2, 86400)}"
       output.close
-      ttl_path = File.join(export_path,"#{timestamp}-#{name}.ttl")
+      ttl_path = File.join(export_path,"#{timestamp}-#{name}"[0..139] + ".ttl")
       FileUtils.copy(output, ttl_path)
       puts "output written to #{ttl_path}"
       output.unlink
