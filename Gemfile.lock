@@ -69,7 +69,7 @@ GEM
     nokogumbo (1.5.0)
       nokogiri
     public_suffix (3.0.3)
-    rake (12.3.2)
+    rake (12.3.3)
     rdf (3.0.10)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
