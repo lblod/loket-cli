@@ -19,6 +19,9 @@ class LoketDb
   EXT = RDF::Vocabulary.new("http://mu.semte.ch/vocabularies/ext/")
   ADMS = RDF::Vocabulary.new('http://www.w3.org/ns/adms#')
   LBLODLG = RDF::Vocabulary.new('http://data.lblod.info/vocabularies/leidinggevenden/')
+  SCHEMA = RDF::Vocab::SCHEMA
+  NIE = RDF::Vocabulary.new("http://www.semanticdesktop.org/ontologies/2007/01/19/nie#")
+  NFO = RDF::Vocabulary.new("http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#")
   BASE_IRI='http://data.lblod.info/id'
 
   def create_gebied(naam)
@@ -248,7 +251,68 @@ class LoketDb
     end
   end
 
-  def write_ttl_to_file(ttl_path, graph_path)
+  def create_conversation(number: , about:, time:, type:)
+    uuid = SecureRandom.uuid
+    conversatie = RDF::URI.new("http://data.lblod.info/id/conversaties/#{uuid}")
+    graph = RDF::Repository.new
+    graph << [ conversatie, RDF.type, SCHEMA.Conversation]
+    graph << [ conversatie, MU.uuid, uuid]
+    graph << [ conversatie, SCHEMA.identifier, number]
+    graph << [ conversatie, SCHEMA.about, about]
+    graph << [ conversatie, EXT.currentType, type]
+    graph << [ conversatie, SCHEMA.processingTime, time]
+    [conversatie, graph]
+  end
+
+  def create_message(conversatie: nil , type: nil, recipient: nil, dateReceived: nil, dateSent: nil, author: nil, sender: nil, isLastMessage: nil)
+    uuid = SecureRandom.uuid
+    message = RDF::URI.new("http://data.lblod.info/id/berichten/#{uuid}")
+    graph = RDF::Repository.new
+    graph << [ message, RDF.type, SCHEMA.Message]
+    graph << [ message, MU.uuid, uuid]
+    graph << [ conversatie, DC.type, type]
+    graph << [ message, SCHEMA.dateSent, RDF::Literal::DateTime.new(dateSent)] if dateSent
+    graph << [ message, SCHEMA.dateReceived, RDF::Literal::DateTime.new(dateReceived)] if dateReceived
+    graph << [ message, SCHEMA.recipient, recipient] if recipient
+    graph << [ message, SCHEMA.sender, sender] if sender
+    graph << [ conversatie, SCHEMA.author, author ] if author
+    graph << [ conversatie, SCHEMA.hasPart, message] if conversatie
+    graph << [ conversatie, EXT.lastMessage, message] if isLastMessage and conversatie
+    [message, graph]
+  end
+
+  def create_message_attachment(message, file_path, date, format)
+    uuid = SecureRandom.uuid
+    logical_file_uri = RDF::URI.new("http://mu.semte.ch/services/file-service/files/#{uuid}")
+    filename = File.basename(file_path)
+    file_extension = filename.split('.').last
+    file_size = File.size(file_path)
+    physical_uuid = SecureRandom.uuid
+    physical_file_name = "#{physical_uuid}.#{file_extension}"
+    physical_file_uri = RDF::URI.new("share://#{physical_file_name}")
+    graph = RDF::Repository.new
+    graph << [message, NIE.hasPart, logical_file_uri]
+    graph << [logical_file_uri, RDF.type, NFO.FileDataObject]
+    graph << [logical_file_uri, MU.uuid, uuid]
+    graph << [logical_file_uri, DC.created, RDF::Literal::DateTime.new(date)]
+    graph << [logical_file_uri, DC.modified, RDF::Literal::DateTime.new(date)]
+    graph << [logical_file_uri, DC.format, format]
+    graph << [logical_file_uri, NFO.fileSize, file_size]
+    graph << [logical_file_uri, NFO.fileName, filename]
+    graph << [logical_file_uri, RDF::URI.new("http://dbpedia.org/ontology/fileExtension"), file_extension]
+    graph << [physical_file_uri, NIE.dataSource, logical_file_uri]
+    graph << [physical_file_uri, RDF.type, NFO.FileDataObject]
+    graph << [physical_file_uri, MU.uuid, physical_uuid]
+    graph << [physical_file_uri, NFO.fileName, physical_file_name]
+    graph << [physical_file_uri, DC.created, RDF::Literal::DateTime.new(DateTime.now)]
+    graph << [physical_file_uri, DC.modified, RDF::Literal::DateTime.new(DateTime.now)]
+    graph << [physical_file_uri, DC.format, format]
+    graph << [physical_file_uri, NFO.fileSize, file_size]
+    graph << [physical_file_uri, RDF::URI.new("http://dbpedia.org/ontology/fileExtension"), file_extension]
+    return [physical_file_name, graph]
+  end
+
+  def write_ttl_to_file(ttl_path, graph_path = nil)
     begin
       output = Tempfile.new(ttl_path)
       output.puts "# started #{ttl_path} at #{DateTime.now}"
@@ -259,12 +323,14 @@ class LoketDb
       puts "output written to #{ttl_path}"
       output.unlink
 
-      output = Tempfile.new(graph_path)
-      output.puts "http://mu.semte.ch/graphs/public"
-      output.close
-      FileUtils.copy(output, graph_path)
-      puts "graph written to #{graph_path}"
-      output.unlink
+      if graph_path
+        output = Tempfile.new(graph_path)
+        output.puts "http://mu.semte.ch/graphs/public"
+        output.close
+        FileUtils.copy(output, graph_path)
+        puts "graph written to #{graph_path}"
+        output.unlink
+      end
     rescue StandardError => e
       puts e
       puts "failed to successfully write #{ttl_path} or #{graph_path}"

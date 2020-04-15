@@ -2,8 +2,10 @@ require 'rubygems'
 require 'optparse'
 require 'linkeddata'
 require 'uri'
+require 'fileutils'
 require_relative 'lib/loket-db'
 require_relative 'lib/personeelsdatabank'
+require 'date'
 
 task :default => :create_admin_unit
 
@@ -105,6 +107,70 @@ task :create_full_units_from_csv do
   bestuurseenheden.each do |bestuurseenheid|
     bestuurseenheid_info = loket_db.write_units_to_file(bestuurseenheid)
     personeelsdb.create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid_info[0], bestuurseenheid_info[1], bestuurseenheid[:name], bestuurseenheid[:classification][:name])
+  end
+end
+
+desc "Bulk create message/conversation for the provided units"
+task :create_bulk_message_from_abb do
+  loket_db = LoketDb.new
+  administrative_units = CSV.read('/data/bestuurseenheden.csv', { headers: true})
+  puts "will create a message for each provided administrative unit (bestuurseenheid), #{administrative_units.length} were provided in /data/bestuurseenheden.csv"
+  number = until_valid ("File number (dossiernummer)") do |input|
+    input.strip.length > 0
+  end
+  type = until_valid("Message type") do |input|
+    input.strip.length > 0
+  end
+  processing_time = until_valid("Processing time (reactietermijn)") do |input|
+    input.strip.length > 0
+  end
+  about = until_valid("About (betreft)") do |input|
+    input.strip.length > 0
+  end
+  datesent = until_valid("Date sent (verzonden) YYYY-MM-DDThh:mm:ssZ") do |input|
+    begin
+      DateTime.strptime(input,"%Y-%m-%dT%H:%M:%S%Z")
+      true
+    rescue
+      false
+    end
+  end
+  attachment_location = until_valid("Attachment location (file will be cloned for each unit)") do |path|
+    File.exist?(path)
+  end
+  attachment_format = until_valid("Attachment format (for example application/pdf)") do |input|
+    input.strip.length > 0
+  end
+  abb = RDF::URI.new("http://data.lblod.info/id/bestuurseenheden/141d9d6b-54af-4d17-b313-8d1c30bc3f5b")
+  export_path = ENV["EXPORT_PATH"] ||= './'
+  FileUtils.mkdir_p(File.join(export_path,"files"))
+  administrative_units.each_with_index do |unit, index|
+    repo = RDF::Repository.new
+    (conversation, graph) = loket_db.create_conversation(number: number, about: about, time: processing_time, type: type)
+    repo << graph
+    (message, graph) = loket_db.create_message(
+      conversatie: conversation,
+      type: type,
+      recipient: RDF::URI.new(unit["unit"]),
+      dateReceived: datesent,
+      dateSent: datesent,
+      sender: abb,
+      isLastMessage: true
+    )
+    repo << graph
+    ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-bulk-message-from-abb-#{index}.ttl")
+    loket_db.write_ttl_to_file(ttl_path) do |file|
+      file.write repo.dump(:ntriples)
+    end
+    File.open("#{ttl_path[0...-4]}.graph", "w") do |file|
+      file << unit["graph"]
+    end
+    (physical_filename, graph) = loket_db.create_message_attachment(message, attachment_location, datesent, attachment_format)
+    FileUtils.copy(attachment_location, File.join(export_path,"files",physical_filename))
+    ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-bulk-message-from-abb-files-#{index}.ttl" ) 
+    loket_db.write_ttl_to_file(ttl_path, "#{ttl_path[0...-4]}.graph") do |file|
+      graph.dump(:ntriples)
+    end
   end
 end
 

@@ -16,7 +16,7 @@ In the `data` folder are two example csv files for the tasks
 The following command will generate all the needed data from a csv input with name `bestuurseenheden.csv`
 
 ```
-docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_full_units_from_csv
+docker run -v $PWD/data:/data --rm -it lblod/loket-cli create_full_units_from_csv
 ```
 
 The following columns are requested for the input csv (in the same order) :
@@ -62,11 +62,13 @@ Three tasks:
 - create_admin_unit creates the bestuurseenheid and related bestuursorganen / bestuursfuncties
 - create_mock_user creates the mock user for a bestuurseenheid
 - create_personeelsaantallen_for_csv creates the datasets for personeelsaantallen. The input is `personeelsaantallen.csv`
+- create_bulk_message_from_abb creates a bulk message from abb. The input is `bestuurseenheden.csv` which needs a column `unit` (the uri of the bestuurseenheid) and a column `graph` (the graph to write messages to)
 
 ```
-docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_admin_unit
-docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_mock_user
-docker run -v "$PWD":/app  -v $PWD/data:/data --rm -it lblod/loket-cli create_personeelsaantallen_for_csv
+docker run -v $PWD/data:/data --rm -it lblod/loket-cli create_admin_unit
+docker run -v $PWD/data:/data --rm -it lblod/loket-cli create_mock_user
+docker run -v $PWD/data:/data --rm -it lblod/loket-cli create_personeelsaantallen_for_csv
+docker run -v $PWD/data:/data --rm -it lblod/loket-cli create_bulk_message_from_abb
 ```
 
 ## development
