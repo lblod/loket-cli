@@ -169,7 +169,7 @@ task :create_bulk_message_from_abb do
     FileUtils.copy(attachment_location, File.join(export_path,"files",physical_filename))
     ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-bulk-message-from-abb-files-#{index}.ttl" ) 
     loket_db.write_ttl_to_file(ttl_path, "#{ttl_path[0...-4]}.graph") do |file|
-      graph.dump(:ntriples)
+      file.write graph.dump(:ntriples)
     end
   end
 end
