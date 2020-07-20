@@ -51,7 +51,7 @@ class LoketDb
     return [uuid, iri, triples]
   end
 
-  def create_administrative_body(unit, name, classification, start_date = Date.parse("2019-01-01"), bestuursfunctierol)
+  def create_administrative_body(unit, name, classification, start_date = Date.parse("2019-01-01"), bestuursfunctierol = nil)
     triples = RDF::Repository.new
     orgaan_uuid = SecureRandom.uuid
     orgaan = RDF::URI.new("http://data.lblod.info/id/bestuursorganen/#{orgaan_uuid}")
