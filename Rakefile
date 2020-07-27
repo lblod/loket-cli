@@ -66,7 +66,7 @@ task :create_admin_unit do
   classifications = loket_db.body_classifications_for_unit(klass[:uri].value.to_s)
   classifications.each do |klass_uri, klass_name|
     bestuursfunctierol = loket_db.get_bestuursfunctie_for_classification(klass_uri)
-    triples << loket_db.create_administrative_body(unit_uri, "#{klass_name} #{name}", klass_uri, bestuursfunctierol)
+    triples << loket_db.create_administrative_body(unit_uri, "#{klass_name} #{name}", klass_uri, Date.parse("2019-01-01"),  bestuursfunctierol)
   end
 
   export_path = ENV["EXPORT_PATH"] ||= './'
@@ -167,7 +167,7 @@ task :create_bulk_message_from_abb do
     end
     (physical_filename, graph) = loket_db.create_message_attachment(message, attachment_location, datesent, attachment_format)
     FileUtils.copy(attachment_location, File.join(export_path,"files",physical_filename))
-    ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-bulk-message-from-abb-files-#{index}.ttl" ) 
+    ttl_path = File.join(export_path,"#{DateTime.now.strftime("%Y%m%d%H%M%S")}-bulk-message-from-abb-files-#{index}.ttl" )
     loket_db.write_ttl_to_file(ttl_path, "#{ttl_path[0...-4]}.graph") do |file|
       file.write graph.dump(:ntriples)
     end
