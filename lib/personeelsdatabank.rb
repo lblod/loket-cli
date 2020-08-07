@@ -62,7 +62,6 @@ class Personeelsdatabank
   def create_personeelsaantallen_for_bestuurseenheid(bestuurseenheid, uuid, name, classification_label)
     triples = RDF::Repository.new
     UNIT_MEASURES.each do |unit_measure|
-      graph = "http://mu.semte.ch/graphs/organizations/#{uuid}/LoketLB-personeelsbeheer"
       dataset_title = unit_measure[:label]
       dataset_description = "#{classification_label} #{name} personeelsaantallen in (#{unit_measure[:label]})"
 
@@ -108,6 +107,7 @@ class Personeelsdatabank
       end
     end
     file_name = "#{classification_label} #{name} personeelsaantallen"
+    graph = "http://mu.semte.ch/graphs/organizations/#{uuid}/LoketLB-personeelsbeheer"
     write_to_files(file_name, graph, triples)
   end
 

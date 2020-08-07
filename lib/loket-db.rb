@@ -227,7 +227,7 @@ class LoketDb
       unit_classifications = body_classifications_for_unit(bestuurseenheid[:classification][:uri].value.to_s)
       unit_classifications.each do |unit_classification_uri, unit_classification_name|
         bestuursfunctierol = get_bestuursfunctie_for_classification(unit_classification_uri)
-        triples << create_administrative_body(unit_uri, "#{unit_classification_name} #{bestuurseenheid[:name]}", unit_classification_uri, bestuursfunctierol)
+        triples << create_administrative_body(unit_uri, "#{unit_classification_name} #{bestuurseenheid[:name]}", unit_classification_uri, Date.parse("2019-01-01"), bestuursfunctierol)
       end
 
       # Prepare paths to write files
