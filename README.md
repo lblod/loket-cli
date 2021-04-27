@@ -48,6 +48,7 @@ Classification should be in the following list :
 - Gemeente
 - OCMW
 - District
+- Vlaamse gemeenschapscommissie
 
 Provincie should be in the following list :
 - Antwerpen

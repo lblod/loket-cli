@@ -93,7 +93,8 @@ class LoketDb
       { id: 9, name: "Provincie", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000000')},
       { id: 10, name: "Gemeente", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000001')},
       { id: 11, name: "OCMW", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000002')},
-      { id: 12, name: "District", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000003')}
+      { id: 12, name: "District", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000003')},
+      { id: 13, name: "Vlaamse gemeenschapscommissie", uri: RDF::URI.new('http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/d90c511e-f827-488c-84ba-432c8f69561c')}
 
     ]
   end
@@ -181,6 +182,10 @@ class LoketDb
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/b52094ff-21a2-4da8-8dbe-f513365d1528':  "Algemene vergadering",
       'http://data.vlaanderen.be/id/concept/BestuursorgaanClassificatieCode/41caf7e6-b040-4720-9cc2-a96cfffed5b4': "Leidend Ambtenaar"
     }
+    vgc = {
+      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/7148e12a-ae03-4a7b-bb16-7b6269b84175': "College",
+      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/ff20fa3e-806b-4160-b74b-7483fe3a6ecd': "Collegelid"
+    }
     map = {
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000000': provincie,
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/5ab0e9b8a3b2ca7c5e000003': district,
@@ -193,7 +198,8 @@ class LoketDb
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/b156b67f-c5f4-4584-9b30-4c090be02fdc': projectvereniging,
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/ea446861-2c51-45fa-afd3-4e4a37b71562': hulpverleningszone,
       'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/a3922c6d-425b-474f-9a02-ffb71a436bfc': politiezone,
-      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089': ocmw_vereniging
+      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/cc4e2d67-603b-4784-9b61-e50bac1ec089': ocmw_vereniging,
+      'http://data.vlaanderen.be/id/concept/BestuurseenheidClassificatieCode/d90c511e-f827-488c-84ba-432c8f69561c': vgc
     }
     map[unit_klass.to_sym].map{ |k, v| [RDF::URI.new(k), v] }.to_h
   end
